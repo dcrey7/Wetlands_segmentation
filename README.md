@@ -3,8 +3,8 @@
 ## 🌍 Project Overview  
 This project aims to **automate wetland detection** using **Sentinel-2 satellite imagery** and **deep learning segmentation models**. Wetlands are critical for biodiversity, carbon storage, and water filtration, but mapping them manually is resource-intensive. Our solution leverages AI to provide scalable, efficient monitoring tools for environmental conservation.  
 
-- Check out Wetands segementation app at https://huggingface.co/spaces/dcrey7/wetland_segmentation_deeplabsv3plus
-- Check out the Model card at https://huggingface.co/dcrey7/wetlands_segmentation_deeplabsv3plus
+- Check out Wetands segementation app at [Hugging face space](https://huggingface.co/spaces/dcrey7/wetland_segmentation_deeplabsv3plus)
+- Check out the Model card at [Hugging face model card](https://huggingface.co/dcrey7/wetlands_segmentation_deeplabsv3plus)
 
 **Key Features**:  
 - **Semantic segmentation** of wetlands using U-Net and DeepLabV3+ models.  
@@ -59,7 +59,7 @@ This project aims to **automate wetland detection** using **Sentinel-2 satellite
 ---
 
 ## 🖥️ Demo App  
-Try the [Hugging Face Spaces demo](https://huggingface.co/spaces/your-username/wetland-segmentation) to upload Sentinel-2 images and get wetland predictions!  
+Try the [Hugging Face Spaces demo](https://huggingface.co/spaces/dcrey7/wetland_segmentation_deeplabsv3plus)to upload Sentinel-2 images and get wetland predictions!  
 
 **Features**:  
 - Wetland coverage % and cloud interference alerts.  
