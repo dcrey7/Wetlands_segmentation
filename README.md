@@ -1,58 +1,118 @@
-# Wetlands Segmentation App
+# Wetland Localization Using Satellite Imagery and Deep Learning  
 
-This Hugging Face Space provides an interactive web interface for segmenting wetland areas in satellite imagery using a DeepLabv3+ model.
+## 🌍 Project Overview  
+This project aims to **automate wetland detection** using **Sentinel-2 satellite imagery** and **deep learning segmentation models**. Wetlands are critical for biodiversity, carbon storage, and water filtration, but mapping them manually is resource-intensive. Our solution leverages AI to provide scalable, efficient monitoring tools for environmental conservation.  
 
-## Features
+**Key Features**:  
+- **Semantic segmentation** of wetlands using U-Net and DeepLabV3+ models.  
+- **Cloud detection** pipeline to filter unusable satellite images (LightGBM classifier).  
+- **Interactive web app** for visualizing predictions and wetland coverage.  
+- Open-source implementation with Hugging Face Spaces deployment.  
 
-- Upload satellite imagery in common formats (JPG, PNG) or GeoTIFF format
-- Optionally upload ground truth masks for evaluation
-- Visualize wetland segmentation predictions
-- Calculate metrics (IoU, Precision, Recall, F1) when ground truth is provided
-- View wetland coverage percentage statistics
+---
 
-## Usage Instructions
+## 📂 Repository Structure  
+```  
+├── data/                    # Raw Sentinel-2 images, masks, and shapefiles  
+├── notebooks/               # Jupyter notebooks for EDA, preprocessing, and modeling  
+├── scripts/                 # Python scripts for data processing and model training  
+├── models/                  # Trained model weights (DeepLabV3+, U-Net)  
+├── app/                     # Streamlit/Hugging Face demo app  
+├── docs/                    # Project report, literature review, and presentations  
+└── README.md  
+```  
 
-1. **Upload Input Image**:
-   - Use the "Upload Image" tab for common image formats (JPG, PNG, etc.)
-   - Use the "Upload TIFF" tab for GeoTIFF files with multiple bands
+---
 
-2. **Upload Ground Truth (Optional)**:
-   - If you have a ground truth mask, upload it to see evaluation metrics
-   - The ground truth should be a binary mask where white (255) represents wetlands
+## 🛠️ Technical Approach  
 
-3. **Analyze**:
-   - Click the "Analyze Image" button to process the image
-   - View the segmentation results and statistics
+### **1. Data Pipeline**  
+- **Data Source**: 36 Sentinel-2 images (2021–2023) of a French wetland area (62×357 pixels, 10 spectral bands).  
+- **Preprocessing**:  
+  - Patched images into 62×62 tiles (180 total patches).  
+  - Applied padding (128×128) to preserve mask quality.  
+  - Augmented data with flips, rotations, and random crops.  
+- **Class Imbalance**: Wetlands covered only **8.93%** of the area → Used **Dice Loss** to handle imbalance.  
 
-## Model Information
+### **2. Models**  
+| Model               | Architecture          | Input Bands | Test mIoU | Key Insight |  
+|---------------------|-----------------------|-------------|-----------|-------------|  
+| DeepLabV3+ (FT)     | ResNet-34 encoder     | RGB         | **52.71** | Best generalization |  
+| U-Net (FT)          | ResNet-34 encoder     | RGB         | 50.80     | Overfitted on training data |  
+| Small U-Net         | Custom lightweight    | 12 bands*   | 46.85     | Struggled with limited data |  
 
-This app uses a model from the [dcrey7/wetlands_segmentation_deeplabsv3plus](https://huggingface.co/dcrey7/wetlands_segmentation_deeplabsv3plus) repository.
+*Included NDVI, NDWI, and 10 Sentinel-2 bands.  
 
-**Model Architecture:**
-- DeepLabv3+ with ResNet-50 backbone
-- Input: RGB satellite imagery (optimal size: 128×128 pixels)
-- Output: Binary segmentation mask (Wetland vs Background)
+### **3. Cloud Detection**  
+- **Model**: LightGBM (F1-score: **0.77**) using Coefficient of Variation (CV) features from 10 bands.  
+- **Impact**: Filtered 19.4% cloudy patches to improve segmentation accuracy.  
 
-The model was trained on a dataset of satellite imagery containing wetland regions, focusing on environmental monitoring and conservation planning applications.
+---
 
-## Example Output
+## 🚀 Results  
+- **Best Model**: Fine-tuned DeepLabV3+ achieved **10.02% wetland IoU** (vs. 5.34% for U-Net).  
+- **Limitations**: Low resolution (54.85m/pixel) and small dataset hindered performance.  
+- **Future Work**:  
+  - Integrate Sentinel-1 radar data for cloud-free analysis.  
+  - Scale to 1000+ high-res patches and test Swin U-Net architectures.  
 
-When you upload an image, the app will display:
-- The original input image
-- The predicted wetland segmentation mask
-- Ground truth mask (if provided)
-- Statistics including wetland coverage percentage
-- Evaluation metrics (if ground truth is provided)
+---
 
-## Limitations
+## 🖥️ Demo App  
+Try the [Hugging Face Spaces demo](https://huggingface.co/spaces/your-username/wetland-segmentation) to upload Sentinel-2 images and get wetland predictions!  
 
-- The model works best on imagery similar to its training data
-- Performance may vary depending on image quality and characteristics
-- The model is designed for 128×128 pixel inputs (images will be resized)
-- While the model can process images with any number of bands, it was trained on RGB data
+**Features**:  
+- Wetland coverage % and cloud interference alerts.  
+- Side-by-side comparison of ground truth vs. predictions.  
 
-## License
+---
 
-This application and the underlying model are available under the Apache 2.0 license.
+## 🔧 Dependencies  
+```  
+Python 3.8+  
+torch >= 1.10  
+rasterio, geopandas  
+transformers.js (for web deployment)  
+```  
+Install: `pip install -r requirements.txt`  
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+---
+
+## 📜 Citation  
+```  
+@misc{wetlandseg2025,  
+  author = {Abhishek Thomas et al.},  
+  title = {Wetland Localization via Satellite Imagery and Deep Learning},  
+  year = {2025},  
+  publisher = {GitHub},  
+  journal = {GitHub repository},  
+  howpublished = {\url{https://github.com/your-repo}}  
+}  
+```  
+
+---
+
+## 🤝 Contributors  
+- **Abhishek Thomas** (Data Science, MLOps)  
+- **Dilara Toygar, Erwin Byll, Henry Turnbull, Siwen Lu**  
+
+*Part of MSc Data Science & AI at emlyon business school, in collaboration with Datacraft.*  
+
+**Let’s democratize AI for environmental conservation!** 🌱💻  
+
+--- 
+**License**: MIT  
+**Questions?** Open an issue or contact [abhishek01789@gmail.com](mailto:abhishek01789@gmail.com).  
+
+*For detailed methodology, see [DSM_Group3_WetlandSegmentation.pdf](./docs/DSM_Group3_WetlandSegmentation.pdf).*  
+
+--- 
+
+### ✨ Why This Matters  
+This project bridges **AI** and **ecology**—proving that scalable, open-source tools can accelerate wetland preservation. By optimizing models for the web (e.g., transformers.js), we aim to make environmental monitoring accessible to everyone.  
+
+**Join us in building the future of WebML for sustainability!**  
+
+---  
+
+*(For a lightweight summary of my ML/web-dev projects, check out my [portfolio](https://github.com/dcrey7) or [LinkedIn](https://linkedin.com/in/dcrey7).)*
